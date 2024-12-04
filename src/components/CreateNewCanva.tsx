@@ -12,7 +12,14 @@ import {
 } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
+} from "./ui/form";
 import { Input } from "./ui/input";
 import {
     Select,
@@ -27,10 +34,10 @@ import { createGraph } from "@/utils/graph";
 
 const CanvaFormSchema = z.object({
     title: z.string().min(2).max(50),
-    nodes: z.number().min(2).max(100),
+    nodes: z.coerce.number().min(2).max(100),
     preset: z.string().min(2).max(50),
-    minWeight: z.number().int(),
-    maxWeight: z.number().int(),
+    minWeight: z.coerce.number(),
+    maxWeight: z.coerce.number(),
 });
 
 export function CreateNewCanva() {
@@ -49,7 +56,6 @@ export function CreateNewCanva() {
 
     const { handleSubmit } = formState;
     const onSubmit = handleSubmit((data) => {
-        console.log("onSubmit", data);
 
         const newCanva: GraphCanva = {
             title: data.title,
@@ -162,6 +168,7 @@ export function CreateNewCanva() {
                                                 {...field}
                                             />
                                         </FormControl>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             ></FormField>
@@ -179,6 +186,7 @@ export function CreateNewCanva() {
                                                 {...field}
                                             />
                                         </FormControl>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             ></FormField>
@@ -191,11 +199,12 @@ export function CreateNewCanva() {
                                         <FormControl>
                                             <Input
                                                 type="number"
-                                                min={2}
+                                                min={-50}
                                                 max={50}
                                                 {...field}
                                             />
                                         </FormControl>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             ></FormField>

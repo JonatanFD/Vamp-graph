@@ -15,8 +15,6 @@ export function createGraph(data: GraphCanva) {
 
     const graph = intializeGraph(nodesAmount);
 
-    console.log(graph);
-
     if (preset === "directed") {
         for (const from in graph) {
             for (const to in graph) {

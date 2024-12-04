@@ -15,7 +15,6 @@ export default function Node({
     ) => void;
 }) {
     const {theme} = useTheme()
-    console.log(theme)
     
     const nodeColor = theme === "dark" ? "#D3D3D3" : "#000000"
     const textColor = theme === "dark" ? "#000000" : "#FFFFFF"

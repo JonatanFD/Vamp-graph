@@ -58,6 +58,9 @@ export interface GraphLine {
 const getEdges = (graph: Graph, dict: GraphNodesPosition) => {
     const lines = [];
     const nameSet = new Set<string>();
+
+    console.log("creating edges from ", graph);
+    
     for (const from in graph) {
         for (const to in graph[from]) {
             const codeFromTo = from + "-" + to;

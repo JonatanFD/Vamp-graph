@@ -64,7 +64,7 @@ export default function Edge({ edges }: { edges: GraphLine[] }) {
                                         ? points[1]
                                         : points[3]
                                 } // Ajusta la posición vertical
-                                text={edge.from.title}
+                                text={edge.weight.toString()}
                                 fontSize={12} // Tamaño de fuente proporcional al radio
                                 fill={weightColor} // Color del texto
                                 align="center"
