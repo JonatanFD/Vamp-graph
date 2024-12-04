@@ -2,6 +2,8 @@ import { Arrow, Group, Line, Rect, Text } from "react-konva";
 import { CanvaGraphNode, GraphLine } from "../Canva";
 import { useTheme } from "../theme-provider";
 import { NodeRadius } from "./constants";
+import { useEffect, useRef } from "react";
+import Konva from "konva";
 
 function getConnectorPoints(from: CanvaGraphNode, to: CanvaGraphNode) {
     const dx = to.x - from.x;
@@ -14,6 +16,64 @@ function getConnectorPoints(from: CanvaGraphNode, to: CanvaGraphNode) {
         to.x + -radio * Math.cos(angle),
         to.y + radio * Math.sin(angle),
     ];
+}
+
+function EdgeWeight({
+    edge,
+    points,
+    weightWidth,
+    weightHeight,
+    weightColor,
+}: {
+    edge: GraphLine;
+    points: number[];
+    weightWidth: number;
+    weightHeight: number;
+    weightColor: string;
+}) {
+    const weightRef = useRef<Konva.Text>(null);
+    const rectRef = useRef<Konva.Rect>(null);
+
+    useEffect(() => {
+        if (!weightRef.current) return;
+        if (!rectRef.current) return;
+
+        const computedLabel = new Konva.Text({
+            text: edge.weight.toString(),
+            fontSize: 12,
+            fill: weightColor,
+        });
+        const width = computedLabel.getWidth();
+        const height = computedLabel.getHeight();
+
+        const xcentered = (points[2] + points[0]) / 2;
+        const ycentered = (points[3] + points[1]) / 2;
+
+        rectRef.current.setAttrs({
+            x: xcentered - width / 2 - 4,
+            y: ycentered - height / 2 - 2,
+            width: width + 8,
+            height: height + 4,
+        });
+    }, [edge]);
+
+    return (
+        <>
+            <Rect fill={"black"} ref={rectRef} cornerRadius={1}/>
+            <Text
+                x={(points[0] < points[2] ? points[0] : points[2]) - NodeRadius}
+                y={(points[1] < points[3] ? points[1] : points[3]) - NodeRadius}
+                text={edge.weight.toString()}
+                fontSize={12}
+                fill={weightColor}
+                align="center"
+                verticalAlign="middle"
+                width={weightWidth + NodeRadius * 2}
+                height={weightHeight + NodeRadius * 2}
+                ref={weightRef}
+            />
+        </>
+    );
 }
 
 export default function Edge({ edges }: { edges: GraphLine[] }) {
@@ -32,7 +92,7 @@ export default function Edge({ edges }: { edges: GraphLine[] }) {
                 const weightHeight = Math.abs(points[3] - points[1]);
 
                 return (
-                    <Group key={edge.from.title + edge.to.title}>
+                    <Group key={edge.from.title + edge.to.title} >
                         {edge.type === "directed" && (
                             <Arrow
                                 points={points}
@@ -53,27 +113,13 @@ export default function Edge({ edges }: { edges: GraphLine[] }) {
                             />
                         )}
 
-                        <Group>
-                            <Text
-                                x={
-                                    (points[0] < points[2]
-                                        ? points[0]
-                                        : points[2]) - NodeRadius
-                                }
-                                y={
-                                    (points[1] < points[3]
-                                        ? points[1]
-                                        : points[3]) - NodeRadius
-                                }
-                                text={edge.weight.toString()}
-                                fontSize={12}
-                                fill={weightColor}
-                                align="center"
-                                verticalAlign="middle"
-                                width={weightWidth + NodeRadius * 2}
-                                height={weightHeight + NodeRadius * 2}
-                            />
-                        </Group>
+                        <EdgeWeight
+                            edge={edge}
+                            points={points}
+                            weightWidth={weightWidth}
+                            weightHeight={weightHeight}
+                            weightColor={weightColor}
+                        />
                     </Group>
                 );
             })}
