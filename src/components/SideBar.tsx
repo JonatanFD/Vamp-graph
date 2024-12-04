@@ -16,7 +16,7 @@ import { useVampGraph } from "@/hooks/use-vamp-graph";
 import { ModeToggle } from "./theme-toggle";
 
 export default function SideBar() {
-    const { canvas, setCurrent } = useVampGraph();
+    const { canvas, setCurrent, current } = useVampGraph();
     return (
         <Sidebar>
             <SidebarHeader>
@@ -40,7 +40,7 @@ export default function SideBar() {
                                         key={item.id}
                                         onClick={() => setCurrent(item.id)}
                                     >
-                                        <SidebarMenuButton asChild>
+                                        <SidebarMenuButton asChild isActive={item.id === current}>
                                             <span>{item.title}</span>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>

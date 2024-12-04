@@ -88,6 +88,11 @@ const getEdges = (graph: Graph, dict: GraphNodesPosition) => {
 };
 
 export type CanvaTool = "addnode" | "connect" | "select";
+export interface ToolBarItem {
+    name: CanvaTool;
+    icon: React.ReactNode;
+    tooltip: string;
+}
 
 export default function Canva() {
     const { canvas, current } = useVampGraph();
@@ -172,14 +177,31 @@ export default function Canva() {
         []
     );
 
+    const TOOLS: ToolBarItem[] = [
+        {
+            name: "select",
+            icon: <Mouse />,
+            tooltip: "Select",
+        },
+        {
+            name: "addnode",
+            icon: <Circle />,
+            tooltip: "Add Node",
+        },
+        {
+            name: "connect",
+            icon: <ArrowUpRight />,
+            tooltip: "Connect Nodes",
+        },
+    ];
+
     useEffect(() => {
         const currentgraph = canvas.find(
             (item) => item.id === current
         ) as GraphCanva;
         if (!currentgraph) return;
 
-        console.log("currentgraph", currentgraph)
-        
+        console.log("currentgraph", currentgraph);
 
         const { nodes: genNodes, dict } = getNodes(currentgraph.graph);
         setNodes(genNodes);
@@ -209,96 +231,71 @@ export default function Canva() {
                 </Stage>
             )}
 
-            <section className="absolute left-0 right-0 bottom-0 w-fit mx-auto mb-4">
-                <ul className="flex gap-3">
-                    <li>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    size="icon"
-                                    onClick={() => setTool("select")}
-                                >
-                                    <Mouse />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Select</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </li>
-                    <li>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    size="icon"
-                                    onClick={() => setTool("addnode")}
-                                >
-                                    <Circle />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Add Node</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </li>
-                    <li>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    size="icon"
-                                    onClick={() => setTool("connect")}
-                                >
-                                    <ArrowUpRight />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Connect Nodes</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </li>
-                    <li>
-                        <div className="flex gap-4 items-center">
-                            <Label>Algorithm: </Label>
-                            <Select
-                                defaultValue={
-                                    canvas.find((item) => item.id === current)
-                                        ?.data.preset ?? "kruskal"
-                                }
-                            >
-                                <SelectTrigger className="w-52">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="kruskal">
-                                        Kruskal
-                                    </SelectItem>
-                                    <SelectItem value="prim">Prim</SelectItem>
-                                    <SelectItem value="maxfow">
-                                        Ford Fulkerson
-                                    </SelectItem>
-                                    <SelectItem value="astar">
-                                        A Star
-                                    </SelectItem>
-                                    <SelectItem value="bellman">
-                                        Bellman Ford
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </li>
-                    <li>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button size="icon">
-                                    <Eye />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Show</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </li>
+            <section className="absolute left-0 right-0 bottom-0 w-fit mx-auto mb-4 flex items-center gap-4">
+                <ul className="flex gap-3 bg-secondary p-2 rounded-xl">
+                    {TOOLS.map((item) => {
+                        return (
+                            <li key={item.name}>
+                                <Tooltip delayDuration={500}>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            size="icon"
+                                            onClick={() => setTool(item.name)}
+                                            variant={
+                                                item.name === tool
+                                                    ? "default"
+                                                    : "ghost"
+                                            }
+                                        >
+                                            {item.icon}
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p>{item.tooltip}</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </li>
+                        );
+                    })}
                 </ul>
+
+                <div  className="flex gap-4 items-center">
+                    <div className="flex gap-4 items-center">
+                        <Label>Algorithm: </Label>
+                        <Select
+                            defaultValue={
+                                canvas.find((item) => item.id === current)?.data
+                                    .preset ?? "kruskal"
+                            }
+                        >
+                            <SelectTrigger className="w-52">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="kruskal">Kruskal</SelectItem>
+                                <SelectItem value="prim">Prim</SelectItem>
+                                <SelectItem value="maxfow">
+                                    Ford Fulkerson
+                                </SelectItem>
+                                <SelectItem value="astar">A Star</SelectItem>
+                                <SelectItem value="bellman">
+                                    Bellman Ford
+                                </SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    <Tooltip delayDuration={500}>
+                        <TooltipTrigger asChild>
+                            <Button size="icon" variant="outline">
+                                <Eye />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Show</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </div>
             </section>
         </main>
     );
