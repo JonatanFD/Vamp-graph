@@ -31,8 +31,11 @@ function EdgeWeight({
     weightHeight: number;
     weightColor: string;
 }) {
+    const {theme} = useTheme()
     const weightRef = useRef<Konva.Text>(null);
     const rectRef = useRef<Konva.Rect>(null);
+
+    const rectColor = theme === "dark" ? "black" : "white";
 
     useEffect(() => {
         if (!weightRef.current) return;
@@ -59,7 +62,7 @@ function EdgeWeight({
 
     return (
         <>
-            <Rect fill={"black"} ref={rectRef} cornerRadius={1}/>
+            <Rect fill={rectColor} ref={rectRef} cornerRadius={1}/>
             <Text
                 x={(points[0] < points[2] ? points[0] : points[2]) - NodeRadius}
                 y={(points[1] < points[3] ? points[1] : points[3]) - NodeRadius}
