@@ -95,9 +95,6 @@ export default function Edge({ edges }: { edges: GraphLine[] }) {
                 const weightHeight = Math.abs(points[3] - points[1]);
 
                 const edgeColor = edge.selected ? "#0C59DF" : color;
-                if (edge.selected) {
-                    console.log(edge);
-                }
                 return (
                     <Group key={edge.from.title + edge.to.title} >
                         {edge.type === "directed" && (

@@ -22,6 +22,7 @@
     "@radix-ui/react-tooltip": "^1.1.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "heap-js": "^2.5.0",
     "konva": "^9.3.16",
     "lucide-react": "^0.462.0",
     "react": "^18.3.1",

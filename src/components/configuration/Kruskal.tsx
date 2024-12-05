@@ -1,10 +1,14 @@
 import { StepBack, StepForward } from "lucide-react";
 import { Label } from "../ui/label";
-import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
+import { SidebarMenuItem } from "../ui/sidebar";
 import { useGraphSolution } from "@/hooks/use-graph-solution";
 import { Button } from "../ui/button";
-import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
-import { DialogContent } from "../ui/dialog";
+import {
+    Dialog,
+    DialogDescription,
+    DialogTrigger,
+} from "@radix-ui/react-dialog";
+import { DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
 import {
     Table,
     TableBody,
@@ -32,6 +36,7 @@ export default function Kruskal() {
         if (step === -1) return;
         setStep(step - 1);
     };
+    console.log("KRUSKAL", solution);
 
     return (
         <>
@@ -74,6 +79,12 @@ export default function Kruskal() {
                     </DialogTrigger>
 
                     <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Solution</DialogTitle>
+                            <DialogDescription>
+                                You can see all steps here
+                            </DialogDescription>
+                        </DialogHeader>
                         <Table>
                             <TableCaption>Solution Tree</TableCaption>
                             <TableHeader>

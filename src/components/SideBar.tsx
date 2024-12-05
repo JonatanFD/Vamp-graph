@@ -17,6 +17,7 @@ import { useVampGraph } from "@/hooks/use-vamp-graph";
 import { ModeToggle } from "./theme-toggle";
 import { useGraphSolution } from "@/hooks/use-graph-solution";
 import Kruskal from "./configuration/Kruskal";
+import Prim from "./configuration/Prim";
 
 export default function SideBar() {
     const { canvas, setCurrent, current } = useVampGraph();
@@ -70,9 +71,8 @@ export default function SideBar() {
                                 </div>
                             )}
 
-                            {solution.algorithm === "kruskal" && (
-                               <Kruskal />
-                            )}
+                            {solution.algorithm === "kruskal" && <Kruskal />}
+                            {solution.algorithm === "prim" && <Prim />}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

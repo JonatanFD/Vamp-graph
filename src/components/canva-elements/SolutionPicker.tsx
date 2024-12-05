@@ -13,36 +13,53 @@ import { useState } from "react";
 import { kruskal } from "@/utils/algorithms/kruskal";
 import { useVampGraph } from "@/hooks/use-vamp-graph";
 import { useGraphSolution } from "@/hooks/use-graph-solution";
+import { GraphCanva } from "@/lib/types";
+import { prim } from "@/utils/algorithms/prim";
 
 export default function SolutionPicker() {
     const { canvas, current } = useVampGraph();
-    const {setSolution, solution } = useGraphSolution()
+    const { setSolution, solution, setStep } = useGraphSolution();
     const [visible, setVisible] = useState(false);
-    const [algorithm, setAlgorithm] = useState("kruskal");
 
     const handleShowSolution = () => {
         setVisible((prev) => !prev);
+    };
 
-        if (algorithm) {
-            const currentGraph = canvas.find((el) => (el.id = current));
-            if (!currentGraph) return;
+    const handleAlgorithmChange = (value: string) => {
+        const currentGraph = canvas.find(
+            (el) => (el.id = current)
+        ) as GraphCanva;
 
-            const solution = kruskal(currentGraph.graph);
-            if (!solution) return;
+        if (value === "kruskal") {
+            const result = kruskal(currentGraph.graph);
 
-            console.log(solution);
+            if (!result) return;
+
             setSolution({
-                algorithm,
-                solution
-            })
+                algorithm: value,
+                solution: result,
+            });
+        } else if (value === "prim") {
+            const result = prim(currentGraph.graph, Object.keys(currentGraph.graph)[0]);
+            if (!result) return;
+
+            setSolution({
+                algorithm: value,
+                solution: result,
+            });
         }
+        setStep(-1);
+
     };
 
     return (
         <div className="flex gap-4 items-center">
             <div className="flex gap-4 items-center">
                 <Label>Algorithm: </Label>
-                <Select defaultValue={solution.algorithm} onValueChange={setAlgorithm}>
+                <Select
+                    defaultValue={solution.algorithm}
+                    onValueChange={handleAlgorithmChange}
+                >
                     <SelectTrigger className="w-52">
                         <SelectValue />
                     </SelectTrigger>
