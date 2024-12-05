@@ -3,6 +3,17 @@ import { Label } from "../ui/label";
 import { SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 import { useGraphSolution } from "@/hooks/use-graph-solution";
 import { Button } from "../ui/button";
+import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
+import { DialogContent } from "../ui/dialog";
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "../ui/table";
 
 export default function Kruskal() {
     const { solution, step, setStep } = useGraphSolution();
@@ -12,6 +23,10 @@ export default function Kruskal() {
         if (step === solution.solution.tree.length - 1) return;
         setStep(step + 1);
     };
+
+    const totalWeight = solution.solution.tree.reduce((acc, item) => {
+        return acc + item[2];
+    }, 0);
 
     const handlePrevStep = () => {
         if (step === -1) return;
@@ -46,8 +61,61 @@ export default function Kruskal() {
                 </div>
             </SidebarMenuItem>
 
-            <SidebarMenuItem>
-                <SidebarMenuButton asChild>Show Table</SidebarMenuButton>
+            <SidebarMenuItem className="px-2">
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="w-full mt-"
+                        >
+                            Show Table
+                        </Button>
+                    </DialogTrigger>
+
+                    <DialogContent>
+                        <Table>
+                            <TableCaption>Solution Tree</TableCaption>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="text-center">
+                                        Index
+                                    </TableHead>
+                                    <TableHead className="text-center">
+                                        Edge
+                                    </TableHead>
+                                    <TableHead className="text-center">
+                                        Weight
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {solution.solution.tree.map((item, index) => {
+                                    return (
+                                        <TableRow key={index}>
+                                            <TableCell className="text-center">
+                                                {index}
+                                            </TableCell>
+                                            <TableCell className="text-center">
+                                                {item[0]} -{item[1]}
+                                            </TableCell>
+                                            <TableCell className="text-center">
+                                                {item[2]}
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
+                                <TableRow>
+                                    <TableCell className="text-center"></TableCell>
+                                    <TableCell className="text-center"></TableCell>
+                                    <TableCell className="text-center">
+                                        {totalWeight}
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </DialogContent>
+                </Dialog>
             </SidebarMenuItem>
         </>
     );
