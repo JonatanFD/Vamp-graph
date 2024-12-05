@@ -94,14 +94,18 @@ export default function Edge({ edges }: { edges: GraphLine[] }) {
                 const weightWidth = Math.abs(points[2] - points[0]);
                 const weightHeight = Math.abs(points[3] - points[1]);
 
+                const edgeColor = edge.selected ? "#0C59DF" : color;
+                if (edge.selected) {
+                    console.log(edge);
+                }
                 return (
                     <Group key={edge.from.title + edge.to.title} >
                         {edge.type === "directed" && (
                             <Arrow
                                 points={points}
                                 strokeWidth={strokeWidth}
-                                stroke={color}
-                                fill={color}
+                                stroke={edgeColor}
+                                fill={edgeColor}
                                 id={id}
                                 lineCap="round"
                             />
@@ -111,7 +115,7 @@ export default function Edge({ edges }: { edges: GraphLine[] }) {
                             <Line
                                 points={points}
                                 strokeWidth={strokeWidth}
-                                stroke={color}
+                                stroke={edgeColor}
                                 id={id}
                             />
                         )}

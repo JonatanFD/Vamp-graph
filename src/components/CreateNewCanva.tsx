@@ -31,6 +31,8 @@ import {
 import { GraphCanva, GraphPreset } from "@/lib/types";
 import { useVampGraph } from "@/hooks/use-vamp-graph";
 import { createGraph } from "@/utils/graph";
+import { useGraphSolution } from "@/hooks/use-graph-solution";
+import { kruskal } from "@/utils/algorithms/kruskal";
 
 const CanvaFormSchema = z.object({
     title: z.string().min(2).max(50),
@@ -53,10 +55,10 @@ export function CreateNewCanva() {
     });
 
     const { addNewCanvas, setCurrent } = useVampGraph();
+    const { setSolution } = useGraphSolution();
 
     const { handleSubmit } = formState;
     const onSubmit = handleSubmit((data) => {
-
         const newCanva: GraphCanva = {
             title: data.title,
             id: Math.random().toString().slice(0, 10).toString(),
@@ -72,10 +74,13 @@ export function CreateNewCanva() {
 
         const graph = createGraph(newCanva);
         newCanva.graph = graph;
-
         console.log(newCanva);
         addNewCanvas(newCanva);
         setCurrent(newCanva.id);
+        
+        const algorithm = data.preset === "undirected" ? "kruskal" : "maxflow";
+        const solution = algorithm === "kruskal" ? kruskal(newCanva.graph) : {}
+        setSolution({ algorithm, solution });
     });
 
     return (
@@ -133,18 +138,6 @@ export function CreateNewCanva() {
                                                 </SelectItem>
                                                 <SelectItem value="undirected">
                                                     Undirected
-                                                </SelectItem>
-                                                <SelectItem value="mst">
-                                                    Minimum Spanning Tree
-                                                </SelectItem>
-                                                <SelectItem value="maxfow">
-                                                    Maximum Flow
-                                                </SelectItem>
-                                                <SelectItem value="astar">
-                                                    A Star
-                                                </SelectItem>
-                                                <SelectItem value="bellman">
-                                                    Bellman Ford Graph
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>

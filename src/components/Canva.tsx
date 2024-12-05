@@ -2,23 +2,17 @@ import { useVampGraph } from "@/hooks/use-vamp-graph";
 import { Graph, GraphCanva } from "@/lib/types";
 import { randomBetween } from "@/lib/utils";
 import { KonvaEventObject } from "konva/lib/Node";
-import { ArrowUpRight, Circle, Eye, Mouse } from "lucide-react";
+import { ArrowUpRight, Circle, Mouse } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Stage, Layer } from "react-konva";
 import { Button } from "./ui/button";
 import { Tooltip } from "@radix-ui/react-tooltip";
 import { TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { Label } from "./ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "./ui/select";
 import Edge from "./canva-elements/Edge";
 import Node from "./canva-elements/Node";
 import NoCanva from "./NoCanva";
+import SolutionPicker from "./canva-elements/SolutionPicker";
+import { useGraphSolution } from "@/hooks/use-graph-solution";
 
 export interface CanvaGraphNode {
     title: string;
@@ -53,14 +47,13 @@ export interface GraphLine {
     to: CanvaGraphNode;
     weight: number;
     type: "directed" | "undirected";
+    selected: boolean;
 }
 
 const getEdges = (graph: Graph, dict: GraphNodesPosition) => {
     const lines = [];
     const nameSet = new Set<string>();
 
-    console.log("creating edges from ", graph);
-    
     for (const from in graph) {
         for (const to in graph[from]) {
             const codeFromTo = from + "-" + to;
@@ -76,6 +69,7 @@ const getEdges = (graph: Graph, dict: GraphNodesPosition) => {
                 to: dict[to],
                 weight,
                 type: "directed",
+                selected: false,
             };
 
             if (from === to) continue;
@@ -104,6 +98,8 @@ export default function Canva() {
     const [edges, setEdges] = useState<GraphLine[]>([]);
 
     const [tool, setTool] = useState<CanvaTool>("select");
+
+    const { step, solution } = useGraphSolution();
 
     // zoom
     const handleZoom = useCallback((e: KonvaEventObject<WheelEvent>) => {
@@ -215,6 +211,39 @@ export default function Canva() {
 
         setEdges(edges);
     }, [current]);
+
+    useEffect(() => {
+        if (step === -1) return;
+
+        const getStep = (step: number) => {
+            const tree = solution.solution.tree;
+            console.log(tree[step]);
+
+            const matches = new Set<string>();
+            for (let i = 0; i < step + 1; i++) {
+                matches.add(tree[i][0] + tree[i][1]);
+                matches.add(tree[i][1] + tree[i][0]);
+            }
+
+            return matches;
+        };
+        const combinations = getStep(step);
+
+        setEdges((prev) => {
+            const newEdges = prev.map((edge) => {
+                const edgeKey = edge.from.title + edge.to.title;
+                if (!combinations.has(edgeKey)) {
+                    edge.selected = false;
+                    return edge;
+                }
+
+                edge.selected = true;
+                return edge;
+            });
+            return newEdges;
+        });
+    }, [step]);
+
     return (
         <main className="w-full relative">
             {current === "" ? (
@@ -268,50 +297,7 @@ export default function Canva() {
                             })}
                         </ul>
 
-                        <div className="flex gap-4 items-center">
-                            <div className="flex gap-4 items-center">
-                                <Label>Algorithm: </Label>
-                                <Select
-                                    defaultValue={
-                                        canvas.find(
-                                            (item) => item.id === current
-                                        )?.data.preset ?? "kruskal"
-                                    }
-                                >
-                                    <SelectTrigger className="w-52">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="kruskal">
-                                            Kruskal
-                                        </SelectItem>
-                                        <SelectItem value="prim">
-                                            Prim
-                                        </SelectItem>
-                                        <SelectItem value="maxfow">
-                                            Ford Fulkerson
-                                        </SelectItem>
-                                        <SelectItem value="astar">
-                                            A Star
-                                        </SelectItem>
-                                        <SelectItem value="bellman">
-                                            Bellman Ford
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-
-                            <Tooltip delayDuration={500}>
-                                <TooltipTrigger asChild>
-                                    <Button size="icon" variant="outline">
-                                        <Eye />
-                                    </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>Show</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </div>
+                        <SolutionPicker />
                     </section>
                 </>
             )}

@@ -10,13 +10,17 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarSeparator,
 } from "./ui/sidebar";
 import { CreateNewCanva } from "./CreateNewCanva";
 import { useVampGraph } from "@/hooks/use-vamp-graph";
 import { ModeToggle } from "./theme-toggle";
+import { useGraphSolution } from "@/hooks/use-graph-solution";
+import Kruskal from "./configuration/Kruskal";
 
 export default function SideBar() {
     const { canvas, setCurrent, current } = useVampGraph();
+    const { solution } = useGraphSolution();
     return (
         <Sidebar>
             <SidebarHeader>
@@ -25,7 +29,7 @@ export default function SideBar() {
                     <h1>Vamp Graph</h1>
                 </section>
             </SidebarHeader>
-
+            <SidebarSeparator />
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel className="flex items-center justify-between">
@@ -40,7 +44,10 @@ export default function SideBar() {
                                         key={item.id}
                                         onClick={() => setCurrent(item.id)}
                                     >
-                                        <SidebarMenuButton asChild isActive={item.id === current}>
+                                        <SidebarMenuButton
+                                            asChild
+                                            isActive={item.id === current}
+                                        >
                                             <span>{item.title}</span>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
@@ -49,6 +56,7 @@ export default function SideBar() {
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
+                <SidebarSeparator />
 
                 <SidebarGroup>
                     <SidebarGroupLabel className="flex items-center justify-between">
@@ -56,11 +64,20 @@ export default function SideBar() {
                     </SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu className="max-h-[300px]">
-                            
+                            {solution.algorithm === "" && (
+                                <div className="flex flex-col gap-2">
+                                    <h2>Create a new Canva</h2>
+                                </div>
+                            )}
+
+                            {solution.algorithm === "kruskal" && (
+                               <Kruskal />
+                            )}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
+            <SidebarSeparator />
 
             <SidebarFooter className="flex items-end">
                 <ModeToggle />
