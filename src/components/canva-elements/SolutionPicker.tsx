@@ -1,4 +1,3 @@
-import { Label } from "../ui/label";
 import {
     Select,
     SelectContent,
@@ -6,25 +5,17 @@ import {
     SelectTrigger,
     SelectValue,
 } from "../ui/select";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { Button } from "../ui/button";
-import { Eye, EyeClosed } from "lucide-react";
-import { useState } from "react";
 import { kruskal } from "@/utils/algorithms/kruskal";
 import { useVampGraph } from "@/hooks/use-vamp-graph";
 import { useGraphSolution } from "@/hooks/use-graph-solution";
 import { GraphCanva } from "@/lib/types";
 import { prim } from "@/utils/algorithms/prim";
 import { ford_fulkerson } from "@/utils/algorithms/ford-fulkerson";
+import { SidebarGroup, SidebarGroupLabel } from "../ui/sidebar";
 
 export default function SolutionPicker() {
     const { canvas, current } = useVampGraph();
     const { setSolution, solution, setStep } = useGraphSolution();
-    const [visible, setVisible] = useState(false);
-
-    const handleShowSolution = () => {
-        setVisible((prev) => !prev);
-    };
 
     const handleAlgorithmChange = (value: string) => {
         const currentGraph = canvas.find(
@@ -71,40 +62,23 @@ export default function SolutionPicker() {
     };
 
     return (
-        <div className="flex gap-4 items-center">
-            <div className="flex gap-4 items-center">
-                <Label>Algorithm: </Label>
-                <Select
-                    defaultValue={solution.algorithm}
-                    onValueChange={handleAlgorithmChange}
-                >
-                    <SelectTrigger className="w-52">
-                        <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="kruskal">Kruskal</SelectItem>
-                        <SelectItem value="prim">Prim</SelectItem>
-                        <SelectItem value="maxflow">Ford Fulkerson</SelectItem>
-                        <SelectItem value="astar">A Star</SelectItem>
-                        <SelectItem value="bellman">Bellman Ford</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-
-            <Tooltip delayDuration={500}>
-                <TooltipTrigger asChild>
-                    <Button
-                        size="icon"
-                        variant="outline"
-                        onClick={handleShowSolution}
-                    >
-                        {visible ? <EyeClosed /> : <Eye />}
-                    </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                    <p>{visible ? "Hide" : "Show"}</p>
-                </TooltipContent>
-            </Tooltip>
-        </div>
+        <SidebarGroup>
+            <SidebarGroupLabel>Algorithm</SidebarGroupLabel>
+            <Select
+                defaultValue={solution.algorithm}
+                onValueChange={handleAlgorithmChange}
+            >
+                <SelectTrigger>
+                    <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="kruskal">Kruskal</SelectItem>
+                    <SelectItem value="prim">Prim</SelectItem>
+                    <SelectItem value="maxflow">Ford Fulkerson</SelectItem>
+                    <SelectItem value="astar">A Star</SelectItem>
+                    <SelectItem value="bellman">Bellman Ford</SelectItem>
+                </SelectContent>
+            </Select>
+        </SidebarGroup>
     );
 }

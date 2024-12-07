@@ -19,6 +19,7 @@ import { useGraphSolution } from "@/hooks/use-graph-solution";
 import Kruskal from "./configuration/Kruskal";
 import Prim from "./configuration/Prim";
 import FordFulkerson from "./configuration/FordFulkerson";
+import SolutionPicker from "./canva-elements/SolutionPicker";
 
 export default function SideBar() {
     const { canvas, setCurrent, current } = useVampGraph();
@@ -60,6 +61,8 @@ export default function SideBar() {
                 </SidebarGroup>
                 <SidebarSeparator />
 
+                <SolutionPicker />
+                
                 <SidebarGroup>
                     <SidebarGroupLabel className="flex items-center justify-between">
                         <span>Configuration</span>

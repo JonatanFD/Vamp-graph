@@ -11,7 +11,6 @@ import { TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import Edge from "./canva-elements/Edge";
 import Node from "./canva-elements/Node";
 import NoCanva from "./NoCanva";
-import SolutionPicker from "./canva-elements/SolutionPicker";
 import { useGraphSolution } from "@/hooks/use-graph-solution";
 import { FordFulkersonSolution } from "@/utils/algorithms/ford-fulkerson";
 
@@ -348,7 +347,6 @@ export default function Canva() {
                             })}
                         </ul>
 
-                        <SolutionPicker />
                     </section>
                 </>
             )}
