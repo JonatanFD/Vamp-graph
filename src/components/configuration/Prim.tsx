@@ -43,7 +43,6 @@ export default function Prim() {
 
         const result = prim(currentGraph.graph, data.origin);
         if (!result) return;
-        console.log("RESULT", result);
         
         setSolution({
             algorithm: "prim",

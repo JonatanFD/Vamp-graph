@@ -75,7 +75,6 @@ export function CreateNewCanva() {
 
         const graph = createGraph(newCanva);
         newCanva.graph = graph;
-        console.log(newCanva);
         addNewCanvas(newCanva);
         setCurrent(newCanva.id);
 

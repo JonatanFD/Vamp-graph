@@ -44,7 +44,6 @@ export default function FordFulkerson() {
             data.target
         );
 
-        console.log(result);
         if (!result) return;
 
         setSolution({

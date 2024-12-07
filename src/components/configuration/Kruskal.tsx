@@ -18,17 +18,18 @@ import {
     TableHeader,
     TableRow,
 } from "../ui/table";
+import { MSTSolution } from "@/lib/types";
 
 export default function Kruskal() {
     const { solution, step, setStep } = useGraphSolution();
+    const sol = solution.solution as MSTSolution;
 
     const handleNextStep = () => {
-        console.log(solution);
-        if (step === solution.solution.tree.length - 1) return;
+        if (step === sol.tree.length - 1) return;
         setStep(step + 1);
     };
 
-    const totalWeight = solution.solution.tree.reduce((acc, item) => {
+    const totalWeight = sol.tree.reduce((acc, item) => {
         return acc + item[2];
     }, 0);
 
@@ -36,7 +37,6 @@ export default function Kruskal() {
         if (step === -1) return;
         setStep(step - 1);
     };
-    console.log("KRUSKAL", solution);
 
     return (
         <>
@@ -101,7 +101,7 @@ export default function Kruskal() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {solution.solution.tree.map((item, index) => {
+                                {sol.tree.map((item, index) => {
                                     return (
                                         <TableRow key={index}>
                                             <TableCell className="text-center">

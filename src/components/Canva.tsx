@@ -202,13 +202,11 @@ export default function Canva() {
         ) as GraphCanva;
         if (!currentgraph) return;
 
-        console.log("currentgraph", currentgraph);
 
         const { nodes: genNodes, dict } = getNodes(currentgraph.graph);
         setNodes(genNodes);
 
         const edges = getEdges(currentgraph.graph, dict);
-        console.log("Lines", edges);
 
         setEdges(edges);
     }, [current]);
@@ -230,7 +228,6 @@ export default function Canva() {
             const getStep = (step: number) => {
                 const sol = solution.solution as MSTSolution;
                 const tree = sol.tree;
-                console.log(tree[step]);
 
                 const matches = new Set<string>();
                 for (let i = 0; i < step + 1; i++) {
@@ -267,11 +264,8 @@ export default function Canva() {
 
             const flow = getFlow(row);
 
-            console.log("FLOW", flow);
-
             const getStep = (step: number) => {
                 const tree = flow;
-                console.log(tree[step]);
 
                 const matches = new Set<string>();
                 for (let i = 0; i < step + 1; i++) {
@@ -283,13 +277,10 @@ export default function Canva() {
             };
 
             const combinations = getStep(step);
-            console.log(combinations);
 
             setEdges((prev) => {
                 const newEdges = prev.map((edge) => {
                     const edgeKey = edge.from.title + edge.to.title;
-
-                    console.log([...combinations]);
 
                     if (!combinations.has(edgeKey)) {
                         edge.selected = false;

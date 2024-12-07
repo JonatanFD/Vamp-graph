@@ -66,12 +66,6 @@ export function kruskal(grafo: Graph) : MSTSolution {
         }
     }
 
-    console.log(`Peso total: ${pesoTotal}`);
-    console.log("Tree: ");
-    for (const [v, w, peso] of tree) {
-        console.log(`${v} -> ${w}: ${peso}`);
-    }
-
     return { tree, totalCost: pesoTotal };
 }
 
