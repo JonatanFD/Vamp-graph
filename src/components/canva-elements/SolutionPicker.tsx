@@ -62,23 +62,31 @@ export default function SolutionPicker() {
     };
 
     return (
-        <SidebarGroup>
-            <SidebarGroupLabel>Algorithm</SidebarGroupLabel>
-            <Select
-                defaultValue={solution.algorithm}
-                onValueChange={handleAlgorithmChange}
-            >
-                <SelectTrigger>
-                    <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="kruskal">Kruskal</SelectItem>
-                    <SelectItem value="prim">Prim</SelectItem>
-                    <SelectItem value="maxflow">Ford Fulkerson</SelectItem>
-                    <SelectItem value="astar">A Star</SelectItem>
-                    <SelectItem value="bellman">Bellman Ford</SelectItem>
-                </SelectContent>
-            </Select>
-        </SidebarGroup>
+        <>
+            {current && (
+                <SidebarGroup>
+                    <SidebarGroupLabel>Algorithm</SidebarGroupLabel>
+                    <Select
+                        defaultValue={solution.algorithm}
+                        onValueChange={handleAlgorithmChange}
+                    >
+                        <SelectTrigger>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="kruskal">Kruskal</SelectItem>
+                            <SelectItem value="prim">Prim</SelectItem>
+                            <SelectItem value="maxflow">
+                                Ford Fulkerson
+                            </SelectItem>
+                            <SelectItem value="astar">A Star</SelectItem>
+                            <SelectItem value="bellman">
+                                Bellman Ford
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                </SidebarGroup>
+            )}
+        </>
     );
 }
