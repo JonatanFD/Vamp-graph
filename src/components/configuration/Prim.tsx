@@ -16,7 +16,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { prim } from "@/utils/algorithms/prim";
-import { GraphCanva } from "@/lib/types";
+import { GraphCanva, MSTSolution } from "@/lib/types";
 
 const PrimFormSchema = z.object({
     origin: z.string(),
@@ -43,7 +43,8 @@ export default function Prim() {
 
         const result = prim(currentGraph.graph, data.origin);
         if (!result) return;
-
+        console.log("RESULT", result);
+        
         setSolution({
             algorithm: "prim",
             solution: result,
@@ -54,8 +55,8 @@ export default function Prim() {
     const { solution, step, setStep } = useGraphSolution();
 
     const handleNextStep = () => {
-        console.log(solution);
-        if (step === solution.solution.tree.length - 1) return;
+        const sol = solution.solution as MSTSolution;
+        if (step === sol.tree.length - 1) return;
         setStep(step + 1);
     };
 

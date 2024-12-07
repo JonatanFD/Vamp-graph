@@ -18,6 +18,7 @@ import { ModeToggle } from "./theme-toggle";
 import { useGraphSolution } from "@/hooks/use-graph-solution";
 import Kruskal from "./configuration/Kruskal";
 import Prim from "./configuration/Prim";
+import FordFulkerson from "./configuration/FordFulkerson";
 
 export default function SideBar() {
     const { canvas, setCurrent, current } = useVampGraph();
@@ -73,6 +74,7 @@ export default function SideBar() {
 
                             {solution.algorithm === "kruskal" && <Kruskal />}
                             {solution.algorithm === "prim" && <Prim />}
+                            {solution.algorithm === "maxflow" && <FordFulkerson />}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

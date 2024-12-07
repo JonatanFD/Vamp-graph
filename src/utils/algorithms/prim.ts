@@ -1,3 +1,4 @@
+import { MSTSolution } from '@/lib/types';
 import * as Heap from 'heap-js';
 
 // Define the graph type
@@ -10,7 +11,7 @@ interface Graph {
 // Define the edge type
 type Edge = [string, string, number];
 
-export function prim(graph: Graph, startNode: string) {
+export function prim(graph: Graph, startNode: string) : MSTSolution {
     // Set to track visited nodes
     const visited = new Set<string>();
     

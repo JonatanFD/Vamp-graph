@@ -15,6 +15,7 @@ import { useVampGraph } from "@/hooks/use-vamp-graph";
 import { useGraphSolution } from "@/hooks/use-graph-solution";
 import { GraphCanva } from "@/lib/types";
 import { prim } from "@/utils/algorithms/prim";
+import { ford_fulkerson } from "@/utils/algorithms/ford-fulkerson";
 
 export default function SolutionPicker() {
     const { canvas, current } = useVampGraph();
@@ -40,16 +41,33 @@ export default function SolutionPicker() {
                 solution: result,
             });
         } else if (value === "prim") {
-            const result = prim(currentGraph.graph, Object.keys(currentGraph.graph)[0]);
+            const result = prim(
+                currentGraph.graph,
+                Object.keys(currentGraph.graph)[0]
+            );
             if (!result) return;
 
             setSolution({
                 algorithm: value,
                 solution: result,
             });
+        } else if (value === "maxflow") {
+            const names = Object.keys(currentGraph.graph);
+
+            const result = ford_fulkerson(
+                currentGraph.graph,
+                names[0],
+                names[names.length - 1]
+            );
+            if (!result) return;
+
+            setSolution({
+                algorithm: value,
+                solution: result,
+            });
+            setStep(-1);
         }
         setStep(-1);
-
     };
 
     return (

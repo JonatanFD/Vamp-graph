@@ -33,6 +33,7 @@ import { useVampGraph } from "@/hooks/use-vamp-graph";
 import { createGraph } from "@/utils/graph";
 import { useGraphSolution } from "@/hooks/use-graph-solution";
 import { kruskal } from "@/utils/algorithms/kruskal";
+import { ford_fulkerson } from "@/utils/algorithms/ford-fulkerson";
 
 const CanvaFormSchema = z.object({
     title: z.string().min(2).max(50),
@@ -61,7 +62,7 @@ export function CreateNewCanva() {
     const onSubmit = handleSubmit((data) => {
         const newCanva: GraphCanva = {
             title: data.title,
-            id: Math.random().toString().slice(0, 10).toString(),
+            id: (() => crypto.randomUUID())(),
             data: {
                 preset: data.preset as GraphPreset,
                 minWeight: data.minWeight,
@@ -77,9 +78,17 @@ export function CreateNewCanva() {
         console.log(newCanva);
         addNewCanvas(newCanva);
         setCurrent(newCanva.id);
-        
+
+        const names = Object.keys(newCanva.graph);
         const algorithm = data.preset === "undirected" ? "kruskal" : "maxflow";
-        const solution = algorithm === "kruskal" ? kruskal(newCanva.graph) : {}
+        const solution =
+            algorithm === "kruskal"
+                ? kruskal(newCanva.graph)
+                : ford_fulkerson(
+                      newCanva.graph,
+                      names[0],
+                      names[names.length - 1]
+                  );
         setSolution({ algorithm, solution });
     });
 

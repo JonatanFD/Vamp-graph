@@ -29,3 +29,10 @@ export type GraphPreset =
     | "kruskal"
     | "astar"
     | "floyd-warshall";
+
+export type MSTStep =  [string, string, number];
+
+export interface MSTSolution {
+    tree: MSTStep[];
+    totalCost: number;
+}

@@ -1,4 +1,4 @@
-import { Graph } from "@/lib/types";
+import { Graph, MSTSolution } from "@/lib/types";
 
 function estanConectados(p: string, q: string, list: string[], ids: string[]): boolean {
     const pIndex = list.indexOf(p);
@@ -51,7 +51,7 @@ function ordenarAristas(grafo: { [key: string]: { [key: string]: number } }): [s
     return cola;
 }
 
-export function kruskal(grafo: Graph) : KruskalSolution {
+export function kruskal(grafo: Graph) : MSTSolution {
     const aristas = ordenarAristas(grafo);
     const ids = Object.keys(grafo);
     const representantes = [...ids];
@@ -72,11 +72,6 @@ export function kruskal(grafo: Graph) : KruskalSolution {
         console.log(`${v} -> ${w}: ${peso}`);
     }
 
-    return { tree, pesoTotal };
-}
-
-export interface KruskalSolution {
-    tree: [string, string, number][];
-    pesoTotal: number;
+    return { tree, totalCost: pesoTotal };
 }
 

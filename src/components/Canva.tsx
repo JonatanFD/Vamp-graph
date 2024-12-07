@@ -1,5 +1,5 @@
 import { useVampGraph } from "@/hooks/use-vamp-graph";
-import { Graph, GraphCanva } from "@/lib/types";
+import { Graph, GraphCanva, MSTSolution } from "@/lib/types";
 import { randomBetween } from "@/lib/utils";
 import { KonvaEventObject } from "konva/lib/Node";
 import { ArrowUpRight, Circle, Mouse } from "lucide-react";
@@ -13,6 +13,7 @@ import Node from "./canva-elements/Node";
 import NoCanva from "./NoCanva";
 import SolutionPicker from "./canva-elements/SolutionPicker";
 import { useGraphSolution } from "@/hooks/use-graph-solution";
+import { FordFulkersonSolution } from "@/utils/algorithms/ford-fulkerson";
 
 export interface CanvaGraphNode {
     title: string;
@@ -99,7 +100,7 @@ export default function Canva() {
 
     const [tool, setTool] = useState<CanvaTool>("select");
 
-    const { step, solution } = useGraphSolution();
+    const { step, solution, row } = useGraphSolution();
 
     // zoom
     const handleZoom = useCallback((e: KonvaEventObject<WheelEvent>) => {
@@ -213,35 +214,94 @@ export default function Canva() {
     }, [current]);
 
     useEffect(() => {
-        if (step === -1) return;
-
-        const getStep = (step: number) => {
-            const tree = solution.solution.tree;
-            console.log(tree[step]);
-
-            const matches = new Set<string>();
-            for (let i = 0; i < step + 1; i++) {
-                matches.add(tree[i][0] + tree[i][1]);
-                matches.add(tree[i][1] + tree[i][0]);
-            }
-
-            return matches;
-        };
-        const combinations = getStep(step);
-
-        setEdges((prev) => {
-            const newEdges = prev.map((edge) => {
-                const edgeKey = edge.from.title + edge.to.title;
-                if (!combinations.has(edgeKey)) {
+        if (step === -1) {
+            setEdges((prev) => {
+                const newEdges = prev.map((edge) => {
                     edge.selected = false;
                     return edge;
+                });
+                return newEdges;
+            });
+
+            return
+        }
+
+        if (solution.algorithm === "kruskal" || solution.algorithm === "prim") {
+            const getStep = (step: number) => {
+                const sol = solution.solution as MSTSolution;
+                const tree = sol.tree;
+                console.log(tree[step]);
+
+                const matches = new Set<string>();
+                for (let i = 0; i < step + 1; i++) {
+                    matches.add(tree[i][0] + tree[i][1]);
+                    matches.add(tree[i][1] + tree[i][0]);
                 }
 
-                edge.selected = true;
-                return edge;
+                return matches;
+            };
+            const combinations = getStep(step);
+
+            setEdges((prev) => {
+                const newEdges = prev.map((edge) => {
+                    const edgeKey = edge.from.title + edge.to.title;
+                    if (!combinations.has(edgeKey)) {
+                        edge.selected = false;
+                        return edge;
+                    }
+
+                    edge.selected = true;
+                    return edge;
+                });
+                return newEdges;
             });
-            return newEdges;
-        });
+        } else if (solution.algorithm === "maxflow") {
+            const getFlow = (index: number) => {
+                const sol = solution.solution as FordFulkersonSolution;
+                const steps = sol.steps;
+
+                const flow = steps[index];
+
+                return flow;
+            };
+
+            const flow = getFlow(row);
+
+            console.log("FLOW", flow);
+
+            const getStep = (step: number) => {
+                const tree = flow;
+                console.log(tree[step]);
+
+                const matches = new Set<string>();
+                for (let i = 0; i < step + 1; i++) {
+                    matches.add(tree[i][0] + tree[i][1]);
+                    matches.add(tree[i][1] + tree[i][0]);
+                }
+
+                return matches;
+            };
+
+            const combinations = getStep(step);
+            console.log(combinations);
+
+            setEdges((prev) => {
+                const newEdges = prev.map((edge) => {
+                    const edgeKey = edge.from.title + edge.to.title;
+
+                    console.log([...combinations]);
+
+                    if (!combinations.has(edgeKey)) {
+                        edge.selected = false;
+                        return edge;
+                    }
+
+                    edge.selected = true;
+                    return edge;
+                });
+                return newEdges;
+            });
+        }
     }, [step]);
 
     return (
