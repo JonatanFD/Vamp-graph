@@ -3,7 +3,7 @@ import { Graph, GraphCanva, MSTSolution } from "@/lib/types";
 import { randomBetween } from "@/lib/utils";
 import { KonvaEventObject } from "konva/lib/Node";
 import { ArrowUpRight, Circle, Mouse } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Stage, Layer } from "react-konva";
 import { Button } from "./ui/button";
 import { Tooltip } from "@radix-ui/react-tooltip";
@@ -13,6 +13,7 @@ import Node from "./canva-elements/Node";
 import NoCanva from "./NoCanva";
 import { useGraphSolution } from "@/hooks/use-graph-solution";
 import { FordFulkersonSolution } from "@/utils/algorithms/ford-fulkerson";
+import Konva from "konva";
 
 export interface CanvaGraphNode {
     title: string;
@@ -24,7 +25,7 @@ export interface GraphNodesPosition {
     [key: string]: CanvaGraphNode;
 }
 
-const getNodes = (graph: Graph) => {
+const getNodes = (graph: Graph, size: { width: number; height: number }) => {
     const nodes: CanvaGraphNode[] = [];
     const names = Object.keys(graph);
 
@@ -33,8 +34,8 @@ const getNodes = (graph: Graph) => {
     names.forEach((name) => {
         const node: CanvaGraphNode = {
             title: name,
-            x: randomBetween(0, window.innerWidth - 10) + 5,
-            y: randomBetween(0, window.innerHeight - 10) + 5,
+            x: randomBetween(0, size.width - 10) + 5,
+            y: randomBetween(0, size.height - 10) + 5,
         };
         nodes.push(node);
         dict[name] = node;
@@ -93,13 +94,14 @@ export interface ToolBarItem {
 }
 
 export default function Canva() {
-    const { canvas, current } = useVampGraph();
+    const { canvas, current, updateCanvas } = useVampGraph();
     const [nodes, setNodes] = useState<CanvaGraphNode[]>([]);
     const [edges, setEdges] = useState<GraphLine[]>([]);
 
     const [tool, setTool] = useState<CanvaTool>("select");
 
     const { step, solution, row } = useGraphSolution();
+    const StageRef = useRef<Konva.Stage | null>(null);
 
     // zoom
     const handleZoom = useCallback((e: KonvaEventObject<WheelEvent>) => {
@@ -195,14 +197,49 @@ export default function Canva() {
         },
     ];
 
+    const handleCanvasClick = (e: KonvaEventObject<MouseEvent>) => {
+        if (tool === "addnode") {
+            const currentCanva = canvas.find(
+                (item) => item.id === current
+            ) as GraphCanva;
+            const currentGraph = currentCanva.graph;
+
+            const pos = e.target.getStage()!.getRelativePointerPosition();
+            if (!pos) return;
+
+            const newCircleName = Object.keys(currentGraph).length.toString();
+
+            const newNode: CanvaGraphNode = {
+                title: newCircleName,
+                ...pos,
+            };
+
+            const updatedGraph = {
+                ...currentGraph,
+                [newCircleName]: {},
+            };
+
+            const newCanva = {
+                ...currentCanva,
+                graph: updatedGraph,
+            };
+
+            updateCanvas(current, newCanva);
+            setNodes((prev) => [...prev, newNode]);
+        }
+    };
+
     useEffect(() => {
         const currentgraph = canvas.find(
             (item) => item.id === current
         ) as GraphCanva;
         if (!currentgraph) return;
 
+        const stg = StageRef.current;
+        if (!stg) return;
+        const size = stg.getSize();
 
-        const { nodes: genNodes, dict } = getNodes(currentgraph.graph);
+        const { nodes: genNodes, dict } = getNodes(currentgraph.graph, size);
         setNodes(genNodes);
 
         const edges = getEdges(currentgraph.graph, dict);
@@ -220,7 +257,7 @@ export default function Canva() {
                 return newEdges;
             });
 
-            return
+            return;
         }
 
         if (solution.algorithm === "kruskal" || solution.algorithm === "prim") {
@@ -304,9 +341,11 @@ export default function Canva() {
                         <Stage
                             width={window.innerWidth}
                             height={window.innerHeight}
+                            className="absolute"
                             draggable
                             onWheel={handleZoom}
-                            className="absolute"
+                            ref={StageRef}
+                            onClick={handleCanvasClick}
                         >
                             <Layer>
                                 <Edge edges={edges} />
@@ -346,7 +385,6 @@ export default function Canva() {
                                 );
                             })}
                         </ul>
-
                     </section>
                 </>
             )}
